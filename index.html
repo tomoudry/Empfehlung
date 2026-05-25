@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filmempfehlung</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--bg:#0a0e1a;--surface:#111827;--surface2:#1c2537;--border:#1e2d45;--accent:#1a6fff;--text:#e8eaf0;--text-muted:#7b8ab0;--radius:10px;}
+    body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+    .header{background:rgba(4,7,17,0.95);padding:14px 48px 12px;position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+    .header-top{display:flex;align-items:center;justify-content:space-between;}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-top">
+      <div style="font-size:15px;font-weight:600;color:var(--text);">Deine Filmempfehlung</div>
+    </div>
+  </div>
+  <div style="padding:32px 48px 60px;">
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);line-height:1.6;">
+      Wir haben dir einen Film empfohlen. Bitte sieh dir die Empfehlung an.</p>
+    <div id="emp-grid" style="display:flex;gap:28px;align-items:flex-start;margin-bottom:48px;"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:40px;padding-bottom:20px;">
+      <button onclick="zurueckZuFragebogen()"
+        style="background:linear-gradient(135deg,#1a6fff,#0ea5e9);border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;padding:13px 36px;">
+        Weiter zum Fragebogen &#8594;
+      </button>
+    </div>
+  </div>
+  <script>
+    const empfehlungsPool = [
+      { id: 104, titel: "Speed", genres: ["Action", "Thriller"], stimmung: ["intensiv"], tempo: "schnell", themen: ["Überleben", "Zeitdruck", "Held"], poster: "https://image.tmdb.org/t/p/w300/apy5KguseoL5iQASBfg44gMfO3u.jpg", jahr: "1994", laufzeit: "116" },
+      { id: 105, titel: "Heat", genres: ["Action", "Crime", "Drama"], stimmung: ["intensiv", "düster"], tempo: "mittel", themen: ["Loyalität", "Verbrechen", "Identität"], poster: "https://image.tmdb.org/t/p/w300/glw2iHmxlTcsCza28SHKW8vh6DE.jpg", jahr: "1995", laufzeit: "170" },
+      { id: 106, titel: "The Raid", genres: ["Action", "Crime"], stimmung: ["intensiv"], tempo: "schnell", themen: ["Überleben", "Kampf", "Pflicht"], poster: "https://image.tmdb.org/t/p/w300/Abnm1Ws3JH0ReCfEhLMPwPcMcGO.jpg", jahr: "2011", laufzeit: "101" },
+      { id: 107, titel: "Crouching Tiger Hidden Dragon", genres: ["Action", "Drama", "Romance"], stimmung: ["episch", "emotional"], tempo: "mittel", themen: ["Ehre", "Liebe", "Freiheit"], poster: "https://image.tmdb.org/t/p/w300/5A7SGcT1GlhWfHsCRQQtGe0TpJB.jpg", jahr: "2000", laufzeit: "120" },
+      { id: 108, titel: "Léon: The Professional", genres: ["Action", "Crime", "Drama"], stimmung: ["intensiv", "emotional"], tempo: "mittel", themen: ["Schutz", "Einsamkeit", "Verlust"], poster: "https://image.tmdb.org/t/p/w300/bxB2q91nKYp8JNzqE7t7TWBVupB.jpg", jahr: "1994", laufzeit: "110" },
+      { id: 109, titel: "The Pursuit of Happyness", genres: ["Biography", "Drama"], stimmung: ["emotional", "fröhlich"], tempo: "mittel", themen: ["Familie", "Durchhaltevermögen", "Erfolg"], poster: "https://image.tmdb.org/t/p/w300/sXZtUH2DBRyTtphO78O5hdM1snn.jpg", jahr: "2006", laufzeit: "117" },
+      { id: 110, titel: "Moonlight", genres: ["Drama"], stimmung: ["emotional", "nachdenklich"], tempo: "langsam", themen: ["Identität", "Einsamkeit", "Liebe"], poster: "https://image.tmdb.org/t/p/w300/qsBqDYSg7bBlxVGQNyK5V9aFVha.jpg", jahr: "2016", laufzeit: "111" },
+      { id: 111, titel: "Room", genres: ["Drama", "Thriller"], stimmung: ["emotional", "düster"], tempo: "langsam", themen: ["Trauma", "Freiheit", "Mutterliebe"], poster: "https://image.tmdb.org/t/p/w300/2hHDMeYyZjbGWn0BeNH1cTMxuM7.jpg", jahr: "2015", laufzeit: "118" },
+      { id: 112, titel: "Boyhood", genres: ["Drama"], stimmung: ["emotional", "nachdenklich"], tempo: "langsam", themen: ["Aufwachsen", "Familie", "Zeit"], poster: "https://image.tmdb.org/t/p/w300/2BvtvDUyxiMJ4dmKfiQf4qdOHQN.jpg", jahr: "2014", laufzeit: "165" },
+      { id: 113, titel: "Nightcrawler", genres: ["Crime", "Drama", "Thriller"], stimmung: ["düster", "intensiv"], tempo: "mittel", themen: ["Ehrgeiz", "Moral", "Medien"], poster: "https://image.tmdb.org/t/p/w300/j9HrX8f7GbZQm1BrBiR40uFQZSb.jpg", jahr: "2014", laufzeit: "117" },
+      { id: 114, titel: "The Girl with the Dragon Tattoo", genres: ["Crime", "Drama", "Mystery"], stimmung: ["düster", "intensiv"], tempo: "mittel", themen: ["Wahrheit", "Rache", "Gewalt"], poster: "https://image.tmdb.org/t/p/w300/8bokS83zGdhaXgN9tjidUKmAftW.jpg", jahr: "2011", laufzeit: "158" },
+      { id: 115, titel: "About Time", genres: ["Comedy", "Drama", "Romance"], stimmung: ["emotional", "fröhlich"], tempo: "mittel", themen: ["Zeit", "Liebe", "Familie"], poster: "https://image.tmdb.org/t/p/w300/1tFBS69meDFqQCb6ztPPcXFlft2.jpg", jahr: "2013", laufzeit: "123" },
+      { id: 116, titel: "Crazy Stupid Love", genres: ["Comedy", "Drama", "Romance"], stimmung: ["fröhlich", "emotional"], tempo: "mittel", themen: ["Liebe", "Selbstfindung", "Familie"], poster: "https://image.tmdb.org/t/p/w300/yfNxUtcP2R8aBKZ8MjlzyIa2UpZ.jpg", jahr: "2011", laufzeit: "118" },
+      { id: 117, titel: "2001: A Space Odyssey", genres: ["Adventure", "Sci-Fi"], stimmung: ["nachdenklich", "episch"], tempo: "langsam", themen: ["Evolution", "KI", "Existenz"], poster: "https://image.tmdb.org/t/p/w300/g16ONGwG7l3R94JFPKCx1orZvYD.jpg", jahr: "1968", laufzeit: "149" },
+      { id: 118, titel: "Gravity", genres: ["Drama", "Sci-Fi", "Thriller"], stimmung: ["intensiv", "emotional"], tempo: "schnell", themen: ["Überleben", "Verlust", "Durchhaltevermögen"], poster: "https://image.tmdb.org/t/p/w300/4h7YZtlvjXijWkvorbirHzJRlyh.jpg", jahr: "2013", laufzeit: "91" },
+      { id: 119, titel: "District 9", genres: ["Action", "Sci-Fi", "Thriller"], stimmung: ["düster", "intensiv"], tempo: "schnell", themen: ["Diskriminierung", "Würde", "Transformation"], poster: "https://image.tmdb.org/t/p/w300/x4PVikCbtYJX1pglNlSMY7l96Y9.jpg", jahr: "2009", laufzeit: "112" },
+      { id: 120, titel: "Annihilation", genres: ["Adventure", "Drama", "Sci-Fi"], stimmung: ["düster", "nachdenklich"], tempo: "langsam", themen: ["Selbstzerstörung", "Natur", "Identität"], poster: "https://image.tmdb.org/t/p/w300/4YRplSk6BhH6PRuE9gfyw9byUJ6.jpg", jahr: "2018", laufzeit: "115" },
+      { id: 121, titel: "500 Days of Summer", genres: ["Comedy", "Drama", "Romance"], stimmung: ["emotional", "nachdenklich"], tempo: "mittel", themen: ["Liebe", "Enttäuschung", "Selbstfindung"], poster: "https://image.tmdb.org/t/p/w300/wPccdrLOL3na6qqH1Md3SnC0N7F.jpg", jahr: "2009", laufzeit: "95" },
+      { id: 122, titel: "Blue Valentine", genres: ["Drama", "Romance"], stimmung: ["düster", "emotional"], tempo: "langsam", themen: ["Liebe", "Scheitern", "Erinnerung"], poster: "https://image.tmdb.org/t/p/w300/rbJLSZSrxp7Kw62XWAp0kG8hxhA.jpg", jahr: "2010", laufzeit: "112" },
+      { id: 123, titel: "Call Me by Your Name", genres: ["Drama", "Romance"], stimmung: ["emotional", "nachdenklich"], tempo: "langsam", themen: ["Liebe", "Jugend", "Erinnerung"], poster: "https://image.tmdb.org/t/p/w300/96P9eErvoIWdi1eOAilUF09Vqe.jpg", jahr: "2017", laufzeit: "132" },
+      { id: 124, titel: "Howl's Moving Castle", genres: ["Animation", "Adventure", "Fantasy"], stimmung: ["emotional", "episch"], tempo: "mittel", themen: ["Liebe", "Krieg", "Identität"], poster: "https://image.tmdb.org/t/p/w300/tXB5bdKfLI3XGrmJqaEh0kTKmH6.jpg", jahr: "2004", laufzeit: "119" },
+      { id: 125, titel: "Coco", genres: ["Animation", "Adventure", "Family"], stimmung: ["emotional", "fröhlich"], tempo: "mittel", themen: ["Familie", "Erinnerung", "Träume"], poster: "https://image.tmdb.org/t/p/w300/x7YxGQGItXaLzl5eQNqGo0837fs.jpg", jahr: "2017", laufzeit: "105" },
+      { id: 126, titel: "Persepolis", genres: ["Animation", "Biography", "Drama"], stimmung: ["düster", "nachdenklich"], tempo: "mittel", themen: ["Freiheit", "Identität", "Geschichte"], poster: "https://image.tmdb.org/t/p/w300/yLdZkk2vgosN883v88ZGgRmNs2A.jpg", jahr: "2007", laufzeit: "96" },
+      { id: 127, titel: "Midsommar", genres: ["Drama", "Horror", "Mystery"], stimmung: ["düster", "gruselig"], tempo: "langsam", themen: ["Trauma", "Gemeinschaft", "Manipulation"], poster: "https://image.tmdb.org/t/p/w300/53p7M8w35cGCjQVsgVLpPIYEck0.jpg", jahr: "2019", laufzeit: "147" },
+      { id: 128, titel: "The Others", genres: ["Drama", "Horror", "Mystery"], stimmung: ["düster", "gruselig"], tempo: "langsam", themen: ["Geheimnis", "Angst", "Familie"], poster: "https://image.tmdb.org/t/p/w300/h27ytqXyOrAB6KmRx2abOp8p2W.jpg", jahr: "2001", laufzeit: "104" },
+      { id: 129, titel: "The Witch", genres: ["Drama", "Horror", "Mystery"], stimmung: ["düster", "gruselig"], tempo: "langsam", themen: ["Glaube", "Isolation", "Böses"], poster: "https://image.tmdb.org/t/p/w300/s8C3CByr4dqWJSxOYx0l4mcLzR.jpg", jahr: "2016", laufzeit: "92" },
+      { id: 130, titel: "127 Hours", genres: ["Adventure", "Biography", "Drama"], stimmung: ["intensiv", "emotional"], tempo: "mittel", themen: ["Überleben", "Wille", "Natur"], poster: "https://image.tmdb.org/t/p/w300/uFooKexRxruACuxnkQVmwf3nNcU.jpg", jahr: "2010", laufzeit: "94" },
+      { id: 131, titel: "Tracks", genres: ["Adventure", "Biography", "Drama"], stimmung: ["emotional", "nachdenklich"], tempo: "langsam", themen: ["Einsamkeit", "Freiheit", "Natur"], poster: "https://image.tmdb.org/t/p/w300/2Abm1zYp1JQPKtFabgGcYxFKJut.jpg", jahr: "2013", laufzeit: "112" },
+      { id: 132, titel: "Milk", genres: ["Biography", "Drama"], stimmung: ["emotional", "nachdenklich"], tempo: "mittel", themen: ["Gerechtigkeit", "Mut", "Identität"], poster: "https://image.tmdb.org/t/p/w300/s1Ad6q0XnVS6u1yoaYghHw5dskv.jpg", jahr: "2008", laufzeit: "128" },
+      { id: 133, titel: "Capote", genres: ["Biography", "Crime", "Drama"], stimmung: ["nachdenklich", "düster"], tempo: "langsam", themen: ["Moral", "Empathie", "Schuld"], poster: "https://image.tmdb.org/t/p/w300/w8UCke112E9jrhjKcwG32kyhTx5.jpg", jahr: "2005", laufzeit: "114" },
+      { id: 134, titel: "The Pianist", genres: ["Biography", "Drama", "Music"], stimmung: ["düster", "emotional"], tempo: "langsam", themen: ["Krieg", "Überleben", "Würde"], poster: "https://image.tmdb.org/t/p/w300/wGslyIWiBIemkravQg0V7qphMpk.jpg", jahr: "2008", laufzeit: "100" },
+      { id: 135, titel: "Paths of Glory", genres: ["Drama", "History", "War"], stimmung: ["düster", "nachdenklich"], tempo: "langsam", themen: ["Krieg", "Gerechtigkeit", "Macht"], poster: "https://image.tmdb.org/t/p/w300/1aBkncMzjccQrjh8FBj0NnbTH2l.jpg", jahr: "1957", laufzeit: "88" },
+      { id: 136, titel: "Chinatown", genres: ["Drama", "Mystery", "Thriller"], stimmung: ["düster", "nachdenklich"], tempo: "langsam", themen: ["Korruption", "Wahrheit", "Macht"], poster: "https://image.tmdb.org/t/p/w300/6y8M1rxjKofQCRKKe6xeV91K2Fc.jpg", jahr: "1974", laufzeit: "130" },
+      { id: 137, titel: "Blue Velvet", genres: ["Crime", "Drama", "Mystery"], stimmung: ["düster", "intensiv"], tempo: "langsam", themen: ["Perversion", "Doppelleben", "Unschuld"], poster: "https://image.tmdb.org/t/p/w300/kh7B91bMl2lZ0mH9WhPfaNUIEQH.jpg", jahr: "1986", laufzeit: "120" },
+      { id: 138, titel: "My Neighbor Totoro", genres: ["Animation", "Family", "Fantasy"], stimmung: ["fröhlich", "entspannt"], tempo: "langsam", themen: ["Natur", "Kindheit", "Familie"], poster: "https://image.tmdb.org/t/p/w300/rtGDOeG9LzoerkDGZF9dnVeLppL.jpg", jahr: "1988", laufzeit: "86" },
+      { id: 139, titel: "Paddington", genres: ["Adventure", "Comedy", "Family"], stimmung: ["fröhlich", "emotional"], tempo: "mittel", themen: ["Akzeptanz", "Freundschaft", "Heimat"], poster: "https://image.tmdb.org/t/p/w300/wpchRGhRhvhtU083PfX2yixXtiw.jpg", jahr: "2014", laufzeit: "95" },
+      { id: 140, titel: "Man on Wire", genres: ["Biography", "Documentary", "Drama"], stimmung: ["fröhlich", "intensiv"], tempo: "mittel", themen: ["Traum", "Mut", "Freiheit"], poster: "https://image.tmdb.org/t/p/w300/oacJEKUH4czthUvFdfWY2f5FdMy.jpg", jahr: "2008", laufzeit: "94" },
+      { id: 141, titel: "Icarus", genres: ["Documentary", "Sport", "Thriller"], stimmung: ["intensiv", "nachdenklich"], tempo: "mittel", themen: ["Betrug", "Wahrheit", "Sport"], poster: "https://image.tmdb.org/t/p/w300/8qSOamtaZlaUnLOJvjY9yZT15dS.jpg", jahr: "2017", laufzeit: "96" },
+      { id: 142, titel: "Once Upon a Time in the West", genres: ["Western"], stimmung: ["episch", "düster"], tempo: "langsam", themen: ["Rache", "Gier", "Mythos"], poster: "https://image.tmdb.org/t/p/w300/on8Q9LhtHYNhmITjUMpgOUkIG8o.jpg", jahr: "1968", laufzeit: "165" },
+      { id: 143, titel: "Tombstone", genres: ["Action", "Drama", "History"], stimmung: ["intensiv", "episch"], tempo: "mittel", themen: ["Gerechtigkeit", "Freundschaft", "Legende"], poster: "https://image.tmdb.org/t/p/w300/rmUjf7ZHAKqygbrdOB4a2o2qfXw.jpg", jahr: "1993", laufzeit: "130" },
+      { id: 144, titel: "Edward Scissorhands", genres: ["Drama", "Fantasy", "Romance"], stimmung: ["emotional", "nachdenklich"], tempo: "langsam", themen: ["Einsamkeit", "Andersartigkeit", "Liebe"], poster: "https://image.tmdb.org/t/p/w300/mqPwap2uS7d7yLJVGjQYTdG9I1P.jpg", jahr: "1990", laufzeit: "105" },
+      { id: 145, titel: "Stardust", genres: ["Adventure", "Fantasy", "Romance"], stimmung: ["fröhlich", "episch"], tempo: "mittel", themen: ["Liebe", "Abenteuer", "Magie"], poster: "https://image.tmdb.org/t/p/w300/lN3PWv6cW22mqXDcgGZgK1Aa2gh.jpg", jahr: "2007", laufzeit: "127" },
+      { id: 146, titel: "Raging Bull", genres: ["Biography", "Drama", "Sport"], stimmung: ["düster", "intensiv"], tempo: "mittel", themen: ["Selbstzerstörung", "Ehrgeiz", "Gewalt"], poster: "https://image.tmdb.org/t/p/w300/hEjK9A9BkNXejFW4tfacVAEHtkn.jpg", jahr: "1980", laufzeit: "129" },
+      { id: 147, titel: "The Fighter", genres: ["Biography", "Drama", "Sport"], stimmung: ["intensiv", "emotional"], tempo: "mittel", themen: ["Familie", "Sucht", "Ehrgeiz"], poster: "https://image.tmdb.org/t/p/w300/xfsFerGhO1h6rLk8vwLgMyQ8WVJ.jpg", jahr: "2010", laufzeit: "116" },
+      { id: 148, titel: "The Maltese Falcon", genres: ["Crime", "Film-Noir", "Mystery"], stimmung: ["düster", "intensiv"], tempo: "mittel", themen: ["Gier", "Täuschung", "Moral"], poster: "https://image.tmdb.org/t/p/w300/bf4o6Uzw5wqLjdKwRuiDrN1xyvl.jpg", jahr: "1941", laufzeit: "100" },
+      { id: 149, titel: "L.A. Confidential", genres: ["Crime", "Drama", "Mystery"], stimmung: ["düster", "intensiv"], tempo: "mittel", themen: ["Korruption", "Wahrheit", "Macht"], poster: "https://image.tmdb.org/t/p/w300/pN2bglI8hhx3yMzkIwVpfFCd2kv.jpg", jahr: "1997", laufzeit: "138" }
+    ];
+
+    const framingTexte = {
+      'w': '',
+      'x': '87 % der Nutzer in dieser Befragung haben diesen Film mit 4 oder 5 Sternen bewertet.',
+      'y': 'Dieser Film hat auf IMDb ein Rating von 8.9?/?10.',
+      'z': 'Dieser Film entspricht genau dem Filmtyp, f?r den du dich erfahrungsgem?? begeisterst.'
+    };
+    const framingStyle = {
+      'x': { border:'#1D9E75', bg:'rgba(29,158,117,0.08)' },
+      'y': { border:'#378ADD', bg:'rgba(55,138,221,0.08)' },
+      'z': { border:'#7F77DD', bg:'rgba(127,119,221,0.08)' }
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const filmId    = parseInt(urlParams.get('filmId'), 10);
+    const bedingung = urlParams.get('condition') || 'w';
+
+    const film    = empfehlungsPool.find(f => f.id === filmId);
+    const framing = framingTexte[bedingung] || '';
+    const style   = framingStyle[bedingung];
+    const grid    = document.getElementById('emp-grid');
+
+    if (film) {
+      grid.innerHTML = `
+        <img src="${film.poster}" alt="${film.titel}"
+          style="width:180px;aspect-ratio:2/3;object-fit:cover;border-radius:10px;flex-shrink:0;"
+          onerror="this.style.display='none'">
+        <div style="flex:1;padding-top:4px;">
+          <div style="font-size:22px;font-weight:700;margin-bottom:6px;">${film.titel}</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">${film.jahr || ''}${film.jahr && film.laufzeit ? ' ? ' : ''}${film.laufzeit ? film.laufzeit + ' Min' : ''}</div>
+          ${framing && style ? `<div style="border-left:3px solid ${style.border};background:${style.bg};padding:12px 16px;margin-bottom:18px;"><div style="font-size:14px;line-height:1.6;color:#b0b8cc;">${framing}</div></div>` : ''}
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            ${film.genres.map(g => `<span style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--text-muted);font-size:11px;padding:3px 10px;">${g}</span>`).join('')}
+          </div>
+        </div>`;
+    } else {
+      grid.innerHTML = '<p style="color:var(--text-muted);">Film nicht gefunden.</p>';
+    }
+
+    function zurueckZuFragebogen() {
+      const ret = urlParams.get('return');
+      if (ret) { window.location.href = decodeURIComponent(ret); }
+      else { alert('Kein R?ckkehr-Link gefunden. Bitte kehre manuell zum Fragebogen zur?ck.'); }
+    }
+  </script>
+</body>
+</html>
