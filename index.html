@@ -1,18 +1,56 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Filmempfehlung</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--bg:#0a0e1a;--surface:#111827;--surface2:#1c2537;--border:#1e2d45;--accent:#1a6fff;--text:#e8eaf0;--text-muted:#7b8ab0;--radius:10px;}
-    body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-    .header{background:rgba(4,7,17,0.95);padding:14px 48px 12px;position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
-    .header-top{display:flex;align-items:center;justify-content:space-between;}
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface2: #1c2537;
+      --border: #1e2d45;
+      --accent: #1a6fff;
+      --text: #e8eaf0;
+      --text-muted: #7b8ab0;
+      --radius: 10px;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(4, 7, 17, 0.95);
+      padding: 14px 48px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
   </style>
 </head>
+
 <body>
   <div class="header">
     <div class="header-top">
@@ -20,7 +58,8 @@
     </div>
   </div>
   <div style="padding:32px 48px 60px;">
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);line-height:1.6;">
+    <p
+      style="font-size:13px;color:var(--text-muted);margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);line-height:1.6;">
       Wir haben dir einen Film empfohlen. Bitte sieh dir die Empfehlung an.</p>
     <div id="emp-grid" style="display:flex;gap:28px;align-items:flex-start;margin-bottom:48px;"></div>
     <div style="display:flex;justify-content:flex-end;margin-top:40px;padding-bottom:20px;">
@@ -87,19 +126,19 @@
       'z': 'Dieser Film entspricht genau dem Filmtyp, f?r den du dich erfahrungsgem?? begeisterst.'
     };
     const framingStyle = {
-      'x': { border:'#1D9E75', bg:'rgba(29,158,117,0.08)' },
-      'y': { border:'#378ADD', bg:'rgba(55,138,221,0.08)' },
-      'z': { border:'#7F77DD', bg:'rgba(127,119,221,0.08)' }
+      'x': { border: '#1D9E75', bg: 'rgba(29,158,117,0.08)' },
+      'y': { border: '#378ADD', bg: 'rgba(55,138,221,0.08)' },
+      'z': { border: '#7F77DD', bg: 'rgba(127,119,221,0.08)' }
     };
 
     const urlParams = new URLSearchParams(window.location.search);
-    const filmId    = parseInt(urlParams.get('filmId'), 10);
+    const filmId = parseInt(urlParams.get('filmId'), 10);
     const bedingung = urlParams.get('condition') || 'w';
 
-    const film    = empfehlungsPool.find(f => f.id === filmId);
+    const film = empfehlungsPool.find(f => f.id === filmId);
     const framing = framingTexte[bedingung] || '';
-    const style   = framingStyle[bedingung];
-    const grid    = document.getElementById('emp-grid');
+    const style = framingStyle[bedingung];
+    const grid = document.getElementById('emp-grid');
 
     if (film) {
       grid.innerHTML = `
@@ -125,4 +164,5 @@
     }
   </script>
 </body>
+
 </html>
