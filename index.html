@@ -132,9 +132,8 @@
     };
 
     const urlParams = new URLSearchParams(window.location.search);
-    const filmId = parseInt(urlParams.get('filmId'), 10);
-    const bedingung = urlParams.get('condition') || 'w';
-
+    const filmId = parseInt(urlParams.get('filmId') || localStorage.getItem('filmId'), 10);
+    const bedingung = urlParams.get('condition') || localStorage.getItem('condition') || 'w';
     const film = empfehlungsPool.find(f => f.id === filmId);
     const framing = framingTexte[bedingung] || '';
     const style = framingStyle[bedingung];
